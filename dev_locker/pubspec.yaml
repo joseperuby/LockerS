@@ -3,6 +3,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 environment: 
   sdk: '>=2.12.0 <3.0.0'
+
 dependencies: 
   flutter: 
     sdk: flutter
@@ -11,14 +12,26 @@ dependencies:
   cached_network_image: ^3.3.0
   flutter_svg: ^2.0.9
   intl: ^0.18.0
+  flutter_native_splash: ^2.4.0
+  get: ^4.6.5
+  google_fonts: ^6.2.1
+
 dev_dependencies: 
   flutter_test: 
     sdk: flutter
+
+flutter_native_splash:
+  color: "#272727"
+  image: dev_locker/assets/images/img_rectangle_261.png
+
 flutter: 
   uses-material-design: true
   assets: 
     - assets/
     - assets/images/
+    - assets/images/bloquear.png
+    - assets/images/candado-abierto.png
+    - assets/images/img_rectangle_261.png
   fonts: 
     - family: Inter
       fonts: 

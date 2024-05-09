@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';  // Ensure GoogleFonts is imported
 import 'package:lock/presentation/iniciar_sesion_screen/login_form_widget.dart';
 import 'package:lock/routes/app_routes.dart';
@@ -82,6 +81,6 @@ class LoginScreen extends StatelessWidget {
     );
   }
   void onTapRegistrar(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.cambioDeContraseAScreen);
+    Navigator.pushNamed(context, AppRoutes.signUpScreen);
   }
 }

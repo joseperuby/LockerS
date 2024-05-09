@@ -14,6 +14,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _rotateAnim;
+  late Animation<double> _logoAnim;
+  late Animation<double> _textAnim;
   bool _isLocked = true;
 
   final splashController = Get.put(SplashScreenController());
@@ -30,14 +32,29 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeInOut,
-      )
+      ),
     )..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          setState(() {
-            _isLocked = false;
-          });
-        }
-      });
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          _isLocked = false;
+        });
+      }
+    });
+
+    // Logo and text animations moving up
+    _logoAnim = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _textAnim = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Interval(0.5, 1.0, curve: Curves.easeInOut),
+      ),
+    );
 
     _controller.forward();
   }
@@ -66,41 +83,60 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Obx(
-                    () => AnimatedOpacity(
-                      duration: const Duration(milliseconds: 2000),
-                      curve: Curves.easeInOut,
-                      opacity: splashController.animate.value ? 1 : 0,
-                      child: SizedBox(
-                        width: 600,
-                        height: 450,
-                        child: Image.asset(tSplashLogo),
-                      ),
-                    ),
+                  AnimatedBuilder(
+                    animation: _logoAnim,
+                    builder: (context, child) {
+                      return Transform.translate(
+                        offset: Offset(0, 300 * _logoAnim.value), // Moves up from below
+                        child: Opacity(
+                          opacity: 1 - _logoAnim.value,
+                          child: SizedBox(
+                            width: 600,
+                            height: 450,
+                            child: Image.asset(tSplashLogo),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  SizedBox(height: 20), // Space between logo and text
-                  Text(
-                    "¡Locker Sport!",
-                    style: GoogleFonts.roboto(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 10), // Space between lines of text
-                  Text(
-                    "Guarda tu pasión,",
-                    style: GoogleFonts.roboto(
-                      fontSize: 25,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    "Accede con inteligencia.",
-                    style: GoogleFonts.roboto(
-                      fontSize: 25,
-                      color: Colors.white,
-                    ),
+                  SizedBox(height: 20),
+                  AnimatedBuilder(
+                    animation: _textAnim,
+                    builder: (context, child) {
+                      return Transform.translate(
+                        offset: Offset(0, 150 * _textAnim.value), // Moves up from below
+                        child: Opacity(
+                          opacity: 1 - _textAnim.value,
+                          child: Column(
+                            children: [
+                              Text(
+                                "¡Locker Sport!",
+                                style: GoogleFonts.roboto(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "Guarda tu pasión,",
+                                style: GoogleFonts.roboto(
+                                  fontSize: 25,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                "Accede con inteligencia.",
+                                style: GoogleFonts.roboto(
+                                  fontSize: 25,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -108,20 +144,17 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             Obx(
               () => AnimatedPositioned(
                 duration: const Duration(milliseconds: 1600),
-                curve: Curves.easeInOut, // Apply easeInOut curve for smoother animation
-                left: splashController.animate.value
-                    ? (MediaQuery.of(context).size.width - 100) / 2
-                    : (MediaQuery.of(context).size.width - 100) / 2,
-                top: splashController.animate.value
-                    ? 100
-                    : -100, // Adjust vertical position to make it visible or hide it
+                curve: Curves.easeInOut,
+                left: (MediaQuery.of(context).size.width - 100) / 2,
+                top: splashController.animate.value ? 100 : MediaQuery.of(context).size.height,
                 child: RotationTransition(
                   turns: _rotateAnim,
                   child: SizedBox(
                     width: 100,
                     height: 100,
                     child: Image.asset(
-                        _isLocked ? tSplashLockerC : tSplashLockerO),
+                      _isLocked ? tSplashLockerC : tSplashLockerO,
+                    ),
                   ),
                 ),
               ),

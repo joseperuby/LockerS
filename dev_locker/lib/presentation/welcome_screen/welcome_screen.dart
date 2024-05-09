@@ -116,7 +116,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
   }
 
   void onTapRegister(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.registroScreen);
+    Navigator.pushNamed(context, AppRoutes.signUpScreen);
   }
 
   void onTapLogin(BuildContext context) {

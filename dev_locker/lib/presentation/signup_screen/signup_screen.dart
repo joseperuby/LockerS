@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lock/src/constants/image_strings.dart';
 import 'package:lock/widgets/custom_elevated_button.dart';
+import 'package:lock/src/features/authentication/controllers/signup_controller.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 
 class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+  SignUpScreen({Key? key}) : super(key: key);
+  final controller = Get.put(SignUpController());
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -38,14 +42,6 @@ class SignUpScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 buildFormFields(context),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildRegistrar(context),
-                    _buildCancelar(context),
-                  ],
-                ),
               ],
             ),
           ),
@@ -56,6 +52,7 @@ class SignUpScreen extends StatelessWidget {
 
   Widget buildFormFields(BuildContext context) {
     return Form(
+      key: _formKey,
       child: Theme(
         data: ThemeData(
           inputDecorationTheme: InputDecorationTheme(
@@ -84,6 +81,7 @@ class SignUpScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
+                controller: controller.nombreCompleto,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person_rounded),
                     labelText: "Nombre Completo",
@@ -91,6 +89,7 @@ class SignUpScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               TextFormField(
+                controller: controller.email,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.email),
                     labelText: "E-mail",
@@ -98,6 +97,7 @@ class SignUpScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               TextFormField(
+                controller: controller.expediente,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.numbers),
                     labelText: "Expediente",
@@ -105,6 +105,7 @@ class SignUpScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               TextFormField(
+                controller: controller.telefono,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.phone),
                     labelText: "Teléfono",
@@ -112,6 +113,7 @@ class SignUpScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               TextFormField(
+                controller: controller.contrasena,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.fingerprint),
                     labelText: "Contraseña",
@@ -119,10 +121,19 @@ class SignUpScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               TextFormField(
+                controller: controller.repetircontrasena,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.fingerprint),
                     labelText: "Repetir Contraseña",
                     hintText: "Repetir Contraseña"),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildRegistrar(context),
+                  _buildCancelar(context),
+                ],
               ),
             ],
           ),
@@ -133,27 +144,30 @@ class SignUpScreen extends StatelessWidget {
 
   Widget _buildRegistrar(BuildContext context) {
     return CustomElevatedButton(
-      onPressed: () {
-        // Add your registration logic here
+      onPressed: () async {
+        if (_formKey.currentState!.validate()) {
+          bool success = await controller.usuarioRegistrado();
+          if (success) {
+            Navigator.pushNamed(context, AppRoutes.homePageScreen);
+          }
+        }
       },
-      height: 70, // Adjust if using .v extension
-      width: 160, // Adjust if using .h extension
+      height: 70,
+      width: 160,
       text: "REGISTRAR",
       buttonStyle: CustomButtonStyles.outlineOnPrimary,
-      buttonTextStyle: theme.textTheme.bodyLarge!,
+      buttonTextStyle: Theme.of(context).textTheme.bodyLarge!,
     );
   }
 
   Widget _buildCancelar(BuildContext context) {
     return CustomElevatedButton(
-      onPressed: () {
-        onTapCancelar(context);
-      },
+      onPressed: () => onTapCancelar(context),
       height: 70,
       width: 160,
       text: "CANCELAR",
       buttonStyle: CustomButtonStyles.outlineOnPrimary,
-      buttonTextStyle: theme.textTheme.bodyLarge!,
+      buttonTextStyle: Theme.of(context).textTheme.bodyLarge!,
     );
   }
 

@@ -82,6 +82,7 @@ class OlvidarEmailScreen extends StatelessWidget {
     );
   }
 
+
   Widget _buildEnviar(BuildContext context) {
     return SizedBox(
       width: double.infinity, // Hace que el botón se expanda al ancho completo

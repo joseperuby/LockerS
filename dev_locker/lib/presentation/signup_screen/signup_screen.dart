@@ -56,24 +56,15 @@ class SignUpScreen extends StatelessWidget {
       child: Theme(
         data: ThemeData(
           inputDecorationTheme: InputDecorationTheme(
-            labelStyle: TextStyle(color: Colors.white), // Label text color
-            hintStyle: TextStyle(
-                color: Colors.white.withOpacity(0.7)), // Hint text color
-            prefixIconColor: Colors.white, // Prefix icon color
-            suffixIconColor: Colors.white, // Suffix icon color
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
-            ),
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
-            ),
+            labelStyle: TextStyle(color: Colors.white),
+            hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+            prefixIconColor: Colors.white,
+            suffixIconColor: Colors.white,
+            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+            focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+            border: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
           ),
-          textTheme: TextTheme(
-            subtitle1: TextStyle(color: Colors.white), // Affects input text
-          ),
+          textTheme: TextTheme(subtitle1: TextStyle(color: Colors.white)),
         ),
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 20),
@@ -146,9 +137,9 @@ class SignUpScreen extends StatelessWidget {
     return CustomElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          bool success = await controller.usuarioRegistrado();
-          if (success) {
-            Navigator.pushNamed(context, AppRoutes.homePageScreen);
+          bool isRegistered = await controller.usuarioRegistrado();
+          if (isRegistered) {
+            onTapRegistrar(context);
           }
         }
       },
@@ -158,7 +149,7 @@ class SignUpScreen extends StatelessWidget {
       buttonStyle: CustomButtonStyles.outlineOnPrimary,
       buttonTextStyle: Theme.of(context).textTheme.bodyLarge!,
     );
-  }
+  } 
 
   Widget _buildCancelar(BuildContext context) {
     return CustomElevatedButton(
@@ -172,6 +163,10 @@ class SignUpScreen extends StatelessWidget {
   }
 
   void onTapCancelar(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.menuPrincipalScreen);
+    Navigator.pushNamed(context, AppRoutes.welcomeScreen);
   }
 }
+
+  void onTapRegistrar(BuildContext context) {
+    Navigator.pushNamed(context, AppRoutes.mainScreen);
+  }

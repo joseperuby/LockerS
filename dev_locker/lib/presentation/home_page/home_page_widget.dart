@@ -1,4 +1,6 @@
+import 'package:get/get.dart';
 import 'package:lock/core/app_export.dart';
+import 'package:lock/src/features/authentication/controllers/signup_controller.dart';
 
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -18,6 +20,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   late HomePageModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final controller = Get.put(SignUpController());
 
   @override
   void initState() {
@@ -255,8 +258,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(0.0, 5.0, 0.0, 0.0),
                 child: FFButtonWidget(
-                  onPressed: () async {
-                    Navigator.pushNamed(context, AppRoutes.homePageCopyScreen);
+                  onPressed: () {
+                    controller.logOut();
                   },
                   text: 'Registrarse',
                   options: FFButtonOptions(

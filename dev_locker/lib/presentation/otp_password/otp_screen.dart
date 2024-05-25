@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lock/src/features/authentication/controllers/signup_controller.dart';
 import 'package:lock/theme/custom_button_style.dart';
 import 'package:lock/widgets/custom_elevated_button.dart';
 
 class OTPScreen extends StatelessWidget {
-  const OTPScreen({Key? key}) : super(key: key);
+  final controller = Get.put(SignUpController());
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +68,7 @@ class OTPScreen extends StatelessWidget {
       width: double.infinity,
       child: CustomElevatedButton(
         onPressed: () {
+          controller.logOut();
         },
         height: 50,
         text: "Next",

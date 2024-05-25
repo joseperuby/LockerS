@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'lockersport-efd07.appspot.com',
     iosBundleId: 'com.lockersport.app',
   );
+
 }

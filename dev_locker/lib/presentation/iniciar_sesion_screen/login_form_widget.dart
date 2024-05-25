@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lock/src/features/authentication/controllers/signup_controller.dart';
 import 'package:lock/widgets/custom_elevated_button.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 
+final controller = Get.put(SignUpController());
 Form LoginForm(BuildContext context) {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
   return Form(
       child: Theme(
     // Encapsulating inputs with a specific theme
@@ -35,6 +41,7 @@ Form LoginForm(BuildContext context) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
+            controller: emailController,
             decoration: InputDecoration(
                 prefixIcon: Icon(Icons.person_rounded),
                 labelText: "Usuario",
@@ -42,6 +49,7 @@ Form LoginForm(BuildContext context) {
           ),
           const SizedBox(height: 30),
           TextFormField(
+            controller: passwordController,
             decoration: InputDecoration(
                 prefixIcon: Icon(Icons.fingerprint_outlined),
                 labelText: "Contraseña",
@@ -88,7 +96,8 @@ Form LoginForm(BuildContext context) {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, AppRoutes.olvidarEmailScreen);
+                                  Navigator.pushNamed(
+                                      context, AppRoutes.olvidarEmailScreen);
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(20),
@@ -128,11 +137,14 @@ Form LoginForm(BuildContext context) {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 30,),
+                              const SizedBox(
+                                height: 30,
+                              ),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.pop(context);
-                                  Navigator.pushNamed(context, AppRoutes.olvidarCelularScreen);
+                                  Navigator.pushNamed(
+                                      context, AppRoutes.olvidarCelularScreen);
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(20),
@@ -192,17 +204,26 @@ Form LoginForm(BuildContext context) {
           const SizedBox(
             height: 40,
           ),
-          SizedBox(width: double.infinity, child: _buildIniciarsesion(context))
+          SizedBox(width: double.infinity, child: _buildIniciarsesion(context, emailController, passwordController))
         ],
       ),
     ),
   ));
 }
 
-Widget _buildIniciarsesion(BuildContext context) {
+Widget _buildIniciarsesion(BuildContext context, TextEditingController email,
+    TextEditingController password) {
   return CustomElevatedButton(
     onPressed: () {
-      onTapLogin(context);
+      if (email.text.isNotEmpty && password.text.isNotEmpty) {
+        controller.signIn(email.text.trim(), password.text.trim());
+      } else {
+        Get.snackbar(
+          "Campos Incompletos",
+          "Por favor, rellene todos los campos",
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
     },
     height: 70.v,
     width: 160.h,
@@ -211,8 +232,4 @@ Widget _buildIniciarsesion(BuildContext context) {
     buttonTextStyle: theme.textTheme
         .bodyLarge!, // Make sure this is properly themed as well if necessary
   );
-}
-
-void onTapLogin(BuildContext context) {
-  Navigator.pushNamed(context, AppRoutes.homePageScreen);
 }

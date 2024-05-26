@@ -5,3 +5,5 @@ const String tWelcome = 'assets/images/Welcome_screen.png';
 const String tLogin = 'assets/images/inicio_sesion.png';
 const String tRegister = 'assets/images/register.png';
 const String tPassword = 'assets/images/olvidarcontraseña.png';
+const String tCasillero = 'assets/images/casillero-personal.png';
+const String tUsuario = 'assets/images/usuario.png';

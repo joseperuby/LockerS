@@ -16,6 +16,7 @@ class SignUpController extends GetxController {
   String userRole = "alumno";
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  User? get currentUser => auth.currentUser;
 
   Future<void> logOut() async {
     try {
@@ -106,6 +107,7 @@ class SignUpController extends GetxController {
       );
     }
   }
+
   Future<bool> usuarioRegistrado() async {
     if (nombreCompleto.text.isEmpty ||
         email.text.isEmpty ||
@@ -163,6 +165,20 @@ class SignUpController extends GetxController {
         password: contrasena.text.trim(),
       );
 
+      User? user = userCredential.user;
+      if (user == null) {
+        Get.snackbar(
+          "Error de Registro",
+          "No se pudo crear el usuario.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+
+      String uid = user.uid;
+
       UsuarioModel newUser = UsuarioModel(
         email: email.text.trim(),
         nombreCompleto: nombreCompleto.text.trim(),
@@ -172,12 +188,9 @@ class SignUpController extends GetxController {
         role: "alumno",
       );
 
-      bool isSuccess = await UsuarioRepositorio.instance.createUser(newUser);
-      if (isSuccess) {
-        userRole = newUser.role;
-        return true;
-      }
-      return false;
+      await firestore.collection('Usuarios').doc(uid).set(newUser.toJson());
+      userRole = newUser.role;
+      return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         Get.snackbar(

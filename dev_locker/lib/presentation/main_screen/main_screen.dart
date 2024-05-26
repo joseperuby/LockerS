@@ -90,13 +90,29 @@ class LockersScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(8.0),
-              children: [
-                LockerItem('Locker #1', 'Volleyball', '1L'),
-                LockerItemStatic('Locker #2', 'Basketball'),
-                LockerItemStatic('Locker #3', 'Fútbol'),
-              ],
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection('Lockers').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData) {
+                  return Text('No data available');
+                }
+                var lockers = snapshot.data!.docs;
+                return ListView.builder(
+                  padding: const EdgeInsets.all(8.0),
+                  itemCount: lockers.length,
+                  itemBuilder: (context, index) {
+                    var locker = lockers[index];
+                    return LockerItem(
+                      locker['title'],
+                      locker['tipo'],
+                      locker.id,
+                    );
+                  },
+                );
+              },
             ),
           ),
           SizedBox(height: 20),
@@ -108,10 +124,10 @@ class LockersScreen extends StatelessWidget {
 
 class LockerItem extends StatelessWidget {
   final String title;
-  final String subtitle;
+  final String tipo;
   final String lockerId;
 
-  LockerItem(this.title, this.subtitle, this.lockerId);
+  LockerItem(this.title, this.tipo, this.lockerId);
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +166,7 @@ class LockerItem extends StatelessWidget {
               ),
             ),
             subtitle: Text(
-              subtitle,
+              tipo,
               style: TextStyle(
                 color: Colors.white70,
                 fontFamily: 'Roboto',
@@ -164,48 +180,6 @@ class LockerItem extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class LockerItemStatic extends StatelessWidget {
-  final String title;
-  final String subtitle;
-
-  LockerItemStatic(this.title, this.subtitle);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10.0),
-      padding: const EdgeInsets.only(top: 5, bottom: 5),
-      decoration: BoxDecoration(
-        color: const Color(0xFF24272C),
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: ListTile(
-        leading: Image(
-          image: AssetImage(tCasillero),
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'Roboto',
-            fontSize: 22.0,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(
-            color: Colors.white70,
-            fontFamily: 'Roboto',
-            fontSize: 16.0,
-          ),
-        ),
-        trailing: Icon(Icons.check_circle, color: Colors.green, size: 30.0),
       ),
     );
   }

@@ -18,6 +18,10 @@ class SignUpController extends GetxController {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   User? get currentUser => auth.currentUser;
 
+  get isPasswordHidden => null;
+
+  get togglePasswordView => null;
+
   Future<void> logOut() async {
     try {
       await auth.signOut();

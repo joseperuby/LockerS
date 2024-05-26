@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:lock/presentation/add_lockers_screen/add_lockers_screen.dart';
 import 'package:lock/src/constants/image_strings.dart';
 import 'package:lock/src/features/authentication/controllers/signup_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainScreenAdmin extends StatefulWidget {
   @override
@@ -65,11 +65,11 @@ class _MainScreenAdminState extends State<MainScreenAdmin> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home, size: 35.0),
-            label: 'Lockers',
+            label: 'Disponibilidad',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_box, size: 35.0),
-            label: 'Disponibilidad',
+            label: 'Agregar Lockers',
           ),
         ],
         onTap: _onItemTapped,
@@ -86,13 +86,29 @@ class AdminLockersScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(8.0),
-              children: [
-                LockerItemAdmin('Locker #1', 'Volleyball', '1L'),
-                LockerItemAdmin('Locker #2', 'Basketball', '2L'),
-                LockerItemAdmin('Locker #3', 'Fútbol', '3L'),
-              ],
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection('Lockers').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData) {
+                  return Text('No data available');
+                }
+                var lockers = snapshot.data!.docs;
+                return ListView.builder(
+                  padding: const EdgeInsets.all(8.0),
+                  itemCount: lockers.length,
+                  itemBuilder: (context, index) {
+                    var locker = lockers[index];
+                    return LockerItemAdmin(
+                      locker['title'],
+                      locker['tipo'],
+                      locker.id,
+                    );
+                  },
+                );
+              },
             ),
           ),
           SizedBox(height: 20),
@@ -180,3 +196,4 @@ class LockerItemAdmin extends StatelessWidget {
     );
   }
 }
+

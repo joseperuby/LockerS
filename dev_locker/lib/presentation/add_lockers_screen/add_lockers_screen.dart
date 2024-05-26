@@ -1,6 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lock/theme/custom_button_style.dart';
+import 'package:lock/widgets/custom_elevated_button.dart';
 
 class AddLockerScreen extends StatefulWidget {
   @override
@@ -8,95 +9,110 @@ class AddLockerScreen extends StatefulWidget {
 }
 
 class _AddLockerScreenState extends State<AddLockerScreen> {
-  final TextEditingController lockerIdController = TextEditingController();
-  final TextEditingController typeController = TextEditingController();
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _tipoController = TextEditingController();
 
-  final CollectionReference lockersCollection =
-      FirebaseFirestore.instance.collection('Lockers');
+  void _addLocker() {
+    final String id = _idController.text.trim();
+    final String title = _titleController.text.trim();
+    final String tipo = _tipoController.text.trim();
 
-  void _addLocker() async {
-    String lockerId = lockerIdController.text.trim();
-    String type = typeController.text.trim();
-
-    if (lockerId.isNotEmpty && type.isNotEmpty) {
-      await lockersCollection.doc(lockerId).set({
+    if (id.isNotEmpty && title.isNotEmpty && tipo.isNotEmpty) {
+      FirebaseFirestore.instance.collection('Lockers').doc(id).set({
+        'title': title,
+        'tipo': tipo,
         'ocupado': false,
-        'tipo': type,
-        'expediente': null,
+      }).then((_) {
+        // Mostrar snackbar de éxito
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Locker creado exitosamente')),
+        );
+
+        // Limpiar los campos de texto
+        _idController.clear();
+        _titleController.clear();
+        _tipoController.clear();
+
+        // Navegar a la pantalla de disponibilidad
+        Navigator.pushNamed(context, '/availability'); // Ajusta la ruta según sea necesario
+      }).catchError((error) {
+        // Mostrar snackbar de error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al crear el locker')),
+        );
       });
-
-      Get.snackbar(
-        'Locker agregado',
-        'El locker $lockerId ha sido agregado exitosamente.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
-
-      lockerIdController.clear();
-      typeController.clear();
     } else {
-      Get.snackbar(
-        'Error',
-        'Por favor, llene todos los campos.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      // Mostrar snackbar para campos vacíos
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor, completa todos los campos')),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TextField(
-            controller: lockerIdController,
-            decoration: InputDecoration(
-              labelText: 'Locker ID',
-              labelStyle: TextStyle(color: Colors.white),
-              filled: true,
-              fillColor: Colors.grey[800],
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            TextField(
+              controller: _idController,
+              decoration: InputDecoration(
+                labelText: 'ID del Locker',
+                labelStyle: TextStyle(color: Colors.white70, fontFamily: 'Roboto'),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white70),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
               ),
+              style: TextStyle(color: Colors.white, fontFamily: 'Roboto'),
             ),
-            style: TextStyle(color: Colors.white),
-          ),
-          SizedBox(height: 20),
-          TextField(
-            controller: typeController,
-            decoration: InputDecoration(
-              labelText: 'Tipo',
-              labelStyle: TextStyle(color: Colors.white),
-              filled: true,
-              fillColor: Colors.grey[800],
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
+            SizedBox(height: 20),
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(
+                labelText: 'Título del Locker',
+                labelStyle: TextStyle(color: Colors.white70, fontFamily: 'Roboto'),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white70),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
               ),
+              style: TextStyle(color: Colors.white, fontFamily: 'Roboto'),
             ),
-            style: TextStyle(color: Colors.white),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _addLocker,
-            child: Text('Agregar Locker'),
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white, backgroundColor: Colors.green,
-              textStyle: TextStyle(
-                fontSize: 18,
-                fontFamily: 'Roboto',
+            SizedBox(height: 20),
+            TextField(
+              controller: _tipoController,
+              decoration: InputDecoration(
+                labelText: 'Tipo de Equipo',
+                labelStyle: TextStyle(color: Colors.white70, fontFamily: 'Roboto'),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white70),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
               ),
-              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
+              style: TextStyle(color: Colors.white, fontFamily: 'Roboto'),
             ),
-          ),
-        ],
+            SizedBox(height: 20),
+            CustomElevatedButton(
+              onPressed: () => _addLocker(),
+              height: 70,
+              width: 160,
+              text: "Agregar",
+              buttonStyle: CustomButtonStyles.outlineOnPrimary,
+              buttonTextStyle: Theme.of(context).textTheme.bodyLarge!,
+            ),
+          ],
+        ),
       ),
     );
   }
